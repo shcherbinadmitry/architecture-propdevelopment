@@ -1,0 +1,21 @@
+@startuml
+!include <C4/C4_Context>
+
+title PropDevelopment "Умный дом"
+
+Person(homeowner, "Собственник")
+
+Boundary(bound, "PropDevelopment") {
+    System(firewall, "Firewall", "Ограничивает доступ")
+    System(propdev_app, "Сервисы Propdevelopment сервисов для собственников",  "Приложение для предоставления услуг собственникам\n\nMobile app(iOS, Android)",)
+}
+
+System_Ext(intercom_service, "Домофон", Парнерская система "Интеллектуального домофона")
+System_Ext(boomgate_service, "Шлагбаум", Партнерская система "Интеллектуального шлагбаума")
+
+Rel(homeowner, firewall, "Делает запросы", "REST")
+Rel(firewall, propdev_app, " ")
+Rel(propdev_app, intercom_service, "REST/SPI", "Управляет")
+Rel(propdev_app, boomgate_service, "REST/SPI", "Управляет")
+
+@enduml
