@@ -9,6 +9,12 @@
 
 ## Инструкция по применению
 
+Для старта на Apple Silicone использовался
+
+```bash
+minikube start --driver qemu --network socket_vmnet --cni calico
+```
+
 ### 1 Назначение меток, применение сетевой политки
 ```bash
 ./init.sh
