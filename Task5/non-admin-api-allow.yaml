@@ -1,9 +1,9 @@
 ---
-# разрешить весь исходящий трафик
+# Разрешить весь исходящий трафик для всех pod'ов
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-all
+  name: allow-all-egress
 spec:
   podSelector: {}
   policyTypes:
@@ -12,11 +12,11 @@ spec:
     - {}
 
 ---
-# frontend <- backend
+# front-end <- back-end (разрешаем backend вход к frontend на 80/tcp)
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-frontend-backend
+  name: allow-frontend-from-backend
 spec:
   podSelector:
     matchLabels:
@@ -27,38 +27,38 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              role: back-end-api-app
+              role: back-end
       ports:
         - protocol: TCP
           port: 80
 
 ---
-# backend <- frontend
+# back-end <- front-end (разрешаем frontend вход к backend на 80/tcp)
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-backend-frontend
+  name: allow-backend-from-frontend
 spec:
   podSelector:
     matchLabels:
-      role: back-end-api
+      role: back-end
   policyTypes:
     - Ingress
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              role: front-end-app
+              role: front-end
       ports:
         - protocol: TCP
           port: 80
 
 ---
-# admin-frontend <- admin-backend
+# admin-front-end <- admin-back-end (разрешаем admin-backend вход к admin-frontend на 80/tcp)
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-admin-frontend-admin-backend
+  name: allow-admin-frontend-from-admin-backend
 spec:
   podSelector:
     matchLabels:
@@ -69,34 +69,34 @@ spec:
     - from:
         - podSelector:
             matchLabels:
-              role: admin-back-end-api-app
+              role: admin-back-end
       ports:
         - protocol: TCP
           port: 80
 
 ---
-# admin-backend <- admin-frontend
+# admin-back-end <- admin-front-end (разрешаем admin-frontend вход к admin-backend на 80/tcp)
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: allow-admin-backend-admin-frontend
+  name: allow-admin-backend-from-admin-frontend
 spec:
   podSelector:
     matchLabels:
-      role: admin-back-end-api
+      role: admin-back-end
   policyTypes:
     - Ingress
   ingress:
     - from:
         - podSelector:
             matchLabels:
-              role: admin-front-end-app
+              role: admin-front-end
       ports:
         - protocol: TCP
           port: 80
 
 ---
-# блокировать весь остальной входящий трафик
+# Блокировать весь остальной входящий трафик (default deny ingress)
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
