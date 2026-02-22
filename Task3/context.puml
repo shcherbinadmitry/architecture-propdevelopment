@@ -1,0 +1,29 @@
+@startuml
+!include <C4/C4_Context>
+
+title PropDevelopment "Умный дом"
+
+Person(homeowner, "Собственник")
+Person(resident, "Проживающий")
+Person(guest, "Гость")
+
+Boundary(bound, "PropDevelopment") {
+    System(firewall, "Firewall", "Ограничивает доступ")
+    System(propdev_app, "Приложения PropDevelopment",  "Мобильное приложение и бэкенды")
+    System(integration, "Интеграционный сервис",  "Единственная точка входа к партнёрам; центральная точка логирования")
+    System(logs, "ELK/SIEM", "Централизованное логирование интеграций")
+}
+
+System_Ext(intercom_service, "Домофон", "Партнёрская система домофона")
+System_Ext(boomgate_service, "Шлагбаум", "Партнёрская система шлагбаума")
+
+Rel(homeowner, firewall, "Запросы", "REST/OIDC")
+Rel(resident, firewall, "Запросы", "REST/OIDC")
+Rel(guest, firewall, "Запросы", "REST/OIDC")
+Rel(firewall, propdev_app, " ")
+Rel(propdev_app, integration, "Вызовы интеграций", "mTLS/JWT")
+Rel(integration, intercom_service, "Управляет", "REST/SPI/mTLS")
+Rel(integration, boomgate_service, "Управляет", "REST/SPI/mTLS")
+Rel(integration, logs, "Централизованное логирование")
+
+@enduml
